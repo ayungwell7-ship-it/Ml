@@ -1,0 +1,231 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Akun pemain atau pengguna terdaftar pada platform ML Tournament",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID pengguna (UID Firebase)" },
+        "email": { "type": "string", "description": "Alamat email terdaftar" },
+        "name": { "type": "string", "description": "Nama lengkap atau nama tampilan", "maxLength": 100 },
+        "username": { "type": "string", "description": "Username unik pemain", "maxLength": 50 },
+        "role": { "type": "string", "enum": ["super_admin", "tournament_admin", "player"], "description": "Hak akses akun" },
+        "phone": { "type": "string", "description": "Nomor WhatsApp/kontak", "maxLength": 25 },
+        "gameId": { "type": "string", "description": "ID game MLBB (misal: 12345678 (2020))", "maxLength": 50 },
+        "avatarUrl": { "type": "string", "description": "URL avatar profil" },
+        "status": { "type": "string", "enum": ["active", "suspended"], "description": "Status akun pengguna" },
+        "createdAt": { "type": "string", "description": "Waktu pendaftaran ISO string" },
+        "updatedAt": { "type": "string", "description": "Waktu pembaruan ISO string" }
+      },
+      "required": ["id", "email", "name", "role", "status", "createdAt"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Profil penyelenggara turnamen yang dikelola oleh Super Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID admin UID" },
+        "name": { "type": "string", "description": "Nama penyelenggara / admin", "maxLength": 100 },
+        "username": { "type": "string", "description": "Username unik untuk login", "maxLength": 50 },
+        "email": { "type": "string", "description": "Email resmi admin" },
+        "status": { "type": "string", "enum": ["active", "inactive"], "description": "Status keaktifan admin" },
+        "tournamentsCount": { "type": "number", "description": "Jumlah turnamen yang diselenggarakan" },
+        "avatarUrl": { "type": "string", "description": "Avatar penyelenggara" },
+        "createdAt": { "type": "string", "description": "Waktu pembuatan admin" },
+        "updatedAt": { "type": "string", "description": "Waktu pembaruan" }
+      },
+      "required": ["id", "name", "username", "email", "status", "createdAt"]
+    },
+    "Tournament": {
+      "title": "Tournament",
+      "description": "Data turnamen Mobile Legends",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID unik turnamen" },
+        "slug": { "type": "string", "description": "Slug URL unik (misal: liga-nusantara-season-4)", "maxLength": 100 },
+        "title": { "type": "string", "description": "Nama turnamen", "maxLength": 150 },
+        "adminId": { "type": "string", "description": "ID penyelenggara pemilik turnamen" },
+        "organizerName": { "type": "string", "description": "Nama organizer/penyelenggara" },
+        "posterUrl": { "type": "string", "description": "URL gambar poster/banner turnamen" },
+        "description": { "type": "string", "description": "Deskripsi lengkap turnamen" },
+        "rules": { "type": "string", "description": "Peraturan dan petunjuk teknis turnamen" },
+        "startDate": { "type": "string", "description": "Tanggal mulai turnamen (YYYY-MM-DD)" },
+        "endDate": { "type": "string", "description": "Tanggal selesai turnamen (YYYY-MM-DD)" },
+        "regStartDate": { "type": "string", "description": "Awal periode pendaftaran" },
+        "regDeadline": { "type": "string", "description": "Batas akhir pendaftaran" },
+        "maxSlots": { "type": "number", "description": "Kapasitas maksimal tim (misal: 64, 32, 16)" },
+        "format": { "type": "string", "enum": ["Single Elimination", "Double Elimination", "Round Robin", "Group Stage + Playoff"], "description": "Format turnamen" },
+        "matchFormat": { "type": "string", "description": "Format game, e.g. Bo3, Bo1, Bo5" },
+        "entryFee": { "type": "number", "description": "Biaya pendaftaran per tim dalam Rupiah (0 jika gratis)" },
+        "prizePoolTotal": { "type": "number", "description": "Total hadiah dalam Rupiah" },
+        "prizes": { "type": "string", "description": "Detail hadiah juara 1, 2, 3, MVP" },
+        "location": { "type": "string", "description": "Lokasi turnamen (Online / Venue)" },
+        "contactInfo": { "type": "string", "description": "Kontak WhatsApp/Discord penyelenggara" },
+        "status": { "type": "string", "enum": ["draft", "registration_open", "registration_closed", "ongoing", "completed", "cancelled"], "description": "Status tahapan turnamen" },
+        "isPublic": { "type": "boolean", "description": "Apakah dipublikasikan ke publik" },
+        "registeredCount": { "type": "number", "description": "Jumlah tim terdaftar yang disetujui" },
+        "createdAt": { "type": "string", "description": "Waktu pembuatan" },
+        "updatedAt": { "type": "string", "description": "Waktu pembaruan" }
+      },
+      "required": ["id", "slug", "title", "adminId", "maxSlots", "format", "prizePoolTotal", "status", "createdAt"]
+    },
+    "Registration": {
+      "title": "Registration",
+      "description": "Pendaftaran tim pada turnamen tertentu",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID unik pendaftaran" },
+        "tournamentId": { "type": "string", "description": "ID turnamen yang didaftar" },
+        "tournamentTitle": { "type": "string", "description": "Nama turnamen" },
+        "adminId": { "type": "string", "description": "ID admin penyelenggara turnamen" },
+        "captainUserId": { "type": "string", "description": "ID user kapten pendaftar" },
+        "teamName": { "type": "string", "description": "Nama tim esports", "maxLength": 100 },
+        "captainName": { "type": "string", "description": "Nama kapten tim", "maxLength": 100 },
+        "captainPhone": { "type": "string", "description": "Nomor WhatsApp kapten", "maxLength": 25 },
+        "teamLogo": { "type": "string", "description": "URL logo tim" },
+        "mainPlayers": { "type": "string", "description": "Daftar 5 pemain utama dalam format JSON/Array" },
+        "subPlayers": { "type": "string", "description": "Daftar pemain cadangan (maks 2)" },
+        "paymentProofUrl": { "type": "string", "description": "URL bukti transfer pembayaran bila turnamen berbayar" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "payment_pending", "cancelled"], "description": "Status verifikasi tim" },
+        "rejectionReason": { "type": "string", "description": "Catatan penolakan jika ditolak" },
+        "createdAt": { "type": "string", "description": "Waktu submit pendaftaran" },
+        "updatedAt": { "type": "string", "description": "Waktu status diupdate" }
+      },
+      "required": ["id", "tournamentId", "teamName", "captainName", "status", "createdAt"]
+    },
+    "Match": {
+      "title": "Match",
+      "description": "Jadwal dan skor pertandingan turnamen",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID unik pertandingan" },
+        "tournamentId": { "type": "string", "description": "ID turnamen" },
+        "adminId": { "type": "string", "description": "ID admin penyelenggara" },
+        "round": { "type": "number", "description": "Nomor ronde (1=R1, 2=R2/Semi, 3=Final)" },
+        "roundName": { "type": "string", "description": "Nama ronde (misal: Round 1, Semifinal, Final)" },
+        "matchNumber": { "type": "number", "description": "Nomor urut match dalam bracket" },
+        "team1Id": { "type": "string", "description": "ID tim 1" },
+        "team1Name": { "type": "string", "description": "Nama tim 1" },
+        "team1Score": { "type": "number", "description": "Skor tim 1" },
+        "team2Id": { "type": "string", "description": "ID tim 2" },
+        "team2Name": { "type": "string", "description": "Nama tim 2" },
+        "team2Score": { "type": "number", "description": "Skor tim 2" },
+        "winnerId": { "type": "string", "description": "ID tim pemenang" },
+        "winnerName": { "type": "string", "description": "Nama tim pemenang" },
+        "scheduledTime": { "type": "string", "description": "Jadwal pertandingan (e.g. 2025-04-12 12:00)" },
+        "boFormat": { "type": "string", "description": "Best of (Bo1, Bo3, Bo5)" },
+        "status": { "type": "string", "enum": ["scheduled", "ongoing", "completed", "postponed", "cancelled"], "description": "Status pertandingan" },
+        "nextMatchId": { "type": "string", "description": "ID pertandingan lanjutan pemenang" }
+      },
+      "required": ["id", "tournamentId", "round", "roundName", "status"]
+    },
+    "Standing": {
+      "title": "Standing",
+      "description": "Klasemen grup untuk turnamen format Round Robin atau Group Stage",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID baris klasemen" },
+        "tournamentId": { "type": "string", "description": "ID turnamen" },
+        "group": { "type": "string", "description": "Nama grup (Grup A, Grup B, dll.)" },
+        "teamId": { "type": "string", "description": "ID tim" },
+        "teamName": { "type": "string", "description": "Nama tim" },
+        "played": { "type": "number", "description": "Jumlah main (M)" },
+        "won": { "type": "number", "description": "Jumlah menang (W)" },
+        "drawn": { "type": "number", "description": "Jumlah seri (D)" },
+        "lost": { "type": "number", "description": "Jumlah kalah (L)" },
+        "points": { "type": "number", "description": "Poin akumulasi (Pts)" },
+        "scoreDiff": { "type": "number", "description": "Selisih skor game (+/-)" }
+      },
+      "required": ["id", "tournamentId", "teamName", "played", "won", "points"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Pengumuman resmi turnamen atau pengumuman global",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID pengumuman" },
+        "tournamentId": { "type": "string", "description": "ID turnamen spesifik atau 'global'" },
+        "adminId": { "type": "string", "description": "ID pembuat pengumuman" },
+        "title": { "type": "string", "description": "Judul pengumuman", "maxLength": 150 },
+        "content": { "type": "string", "description": "Isi lengkap pengumuman" },
+        "category": { "type": "string", "enum": ["info", "jadwal", "aturan", "urgent"], "description": "Kategori" },
+        "createdAt": { "type": "string", "description": "Waktu posting" }
+      },
+      "required": ["id", "title", "content", "createdAt"]
+    },
+    "ActivityLog": {
+      "title": "ActivityLog",
+      "description": "Catatan log audit aktivitas admin dan sistem",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID log unik" },
+        "userId": { "type": "string", "description": "ID user/admin pelaku aksi" },
+        "userName": { "type": "string", "description": "Nama pelaku" },
+        "role": { "type": "string", "description": "Peran pelaku" },
+        "action": { "type": "string", "description": "Jenis aksi (e.g. create_tournament, update_score, approve_team)" },
+        "description": { "type": "string", "description": "Detail penjelasan aktivitas" },
+        "targetType": { "type": "string", "description": "Objek yang dimodifikasi (tournament, match, team, user)" },
+        "targetId": { "type": "string", "description": "ID objek yang dimodifikasi" },
+        "createdAt": { "type": "string", "description": "Waktu aktivitas tercatat" }
+      },
+      "required": ["id", "userId", "action", "description", "createdAt"]
+    },
+    "WebsiteSettings": {
+      "title": "WebsiteSettings",
+      "description": "Konfigurasi global platform ML TOURNAMENT yang dikelola Super Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Identifier pengaturan (default: 'global')" },
+        "siteName": { "type": "string", "description": "Nama website", "maxLength": 100 },
+        "tagline": { "type": "string", "description": "Tagline website", "maxLength": 200 },
+        "heroDescription": { "type": "string", "description": "Deskripsi hero landing page" },
+        "contactEmail": { "type": "string", "description": "Email resmi bantuan" },
+        "contactWhatsApp": { "type": "string", "description": "Nomor WhatsApp admin pusat" },
+        "discordUrl": { "type": "string", "description": "Tautan server Discord" },
+        "instagramUrl": { "type": "string", "description": "Tautan Instagram komunitas" },
+        "youtubeUrl": { "type": "string", "description": "Tautan channel YouTube" },
+        "globalNotice": { "type": "string", "description": "Pengumuman banner darurat" },
+        "isRegistrationActive": { "type": "boolean", "description": "Status pendaftaran umum dibuka" }
+      },
+      "required": ["id", "siteName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Profil pengguna umum dan pemain"
+    },
+    "/admins/{adminId}": {
+      "schema": { "$ref": "#/entities/Admin" },
+      "description": "Daftar kredensial dan data admin turnamen"
+    },
+    "/tournaments/{tournamentId}": {
+      "schema": { "$ref": "#/entities/Tournament" },
+      "description": "Koleksi seluruh turnamen Mobile Legends"
+    },
+    "/tournamentRegistrations/{registrationId}": {
+      "schema": { "$ref": "#/entities/Registration" },
+      "description": "Pendaftaran tim pada masing-masing turnamen"
+    },
+    "/matches/{matchId}": {
+      "schema": { "$ref": "#/entities/Match" },
+      "description": "Pertandingan, jadwal, skor dan status"
+    },
+    "/standings/{standingId}": {
+      "schema": { "$ref": "#/entities/Standing" },
+      "description": "Klasemen grup turnamen"
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "Pengumuman resmi turnamen & global"
+    },
+    "/activityLogs/{logId}": {
+      "schema": { "$ref": "#/entities/ActivityLog" },
+      "description": "Audit log aktivitas sistem"
+    },
+    "/websiteSettings/{settingId}": {
+      "schema": { "$ref": "#/entities/WebsiteSettings" },
+      "description": "Pengaturan website global oleh Super Admin"
+    }
+  }
+}

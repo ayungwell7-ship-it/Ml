@@ -1,0 +1,6 @@
+{
+  "name": "ML TOURNAMENT - Platform Turnamen Mobile Legends",
+  "description": "Platform turnamen esports Mobile Legends profesional dengan dashboard Super Admin, Admin Turnamen, pendaftaran tim, bracket dinamis, jadwal, dan klasemen terintegrasi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

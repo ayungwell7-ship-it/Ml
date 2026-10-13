@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super_admin'
+      );
+    }
+
+    function isTournamentAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.status == 'active'
+      );
+    }
+
+    // Admins Collection
+    match /admins/{adminId} {
+      allow read: if true;
+      allow create, delete: if isSuperAdmin();
+      allow update: if isSuperAdmin() || (isSignedIn() && request.auth.uid == adminId);
+    }
+
+    // Tournaments Collection
+    match /tournaments/{tournamentId} {
+      allow read: if true;
+      allow create: if isSuperAdmin() || (
+        isTournamentAdmin() && incoming().adminId == request.auth.uid
+      );
+      allow update: if isSuperAdmin() || (
+        isTournamentAdmin() && existing().adminId == request.auth.uid && incoming().adminId == existing().adminId
+      );
+      allow delete: if isSuperAdmin() || (
+        isTournamentAdmin() && existing().adminId == request.auth.uid
+      );
+    }
+
+    // Tournament Registrations Collection
+    match /tournamentRegistrations/{regId} {
+      allow read: if true;
+      // Public visitors can register teams with pending status
+      allow create: if incoming().status == 'pending' &&
+        incoming().paymentStatus == 'menunggu_konfirmasi' &&
+        incoming().teamName is string &&
+        incoming().captainName is string &&
+        incoming().tournamentId is string;
+      // Only tournament owner admin or Super Admin can approve/reject/update
+      allow update, delete: if isSuperAdmin() || (
+        isTournamentAdmin() && existing().adminId == request.auth.uid
+      );
+    }
+
+    // Matches Collection
+    match /matches/{matchId} {
+      allow read: if true;
+      allow create, delete: if isSuperAdmin() || (
+        isTournamentAdmin() && incoming().adminId == request.auth.uid
+      );
+      allow update: if isSuperAdmin() || (
+        isTournamentAdmin() && existing().adminId == request.auth.uid
+      );
+    }
+
+    // Standings Collection
+    match /standings/{standingId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || isTournamentAdmin();
+    }
+
+    // Activity Logs Collection
+    match /activityLogs/{logId} {
+      allow read: if isSuperAdmin() || (isTournamentAdmin() && resource.data.userId == request.auth.uid);
+      allow create: if true;
+      allow update, delete: if false;
+    }
+
+    // Website Settings Collection
+    match /websiteSettings/{settingId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+  }
+}
